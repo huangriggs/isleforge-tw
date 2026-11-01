@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="zh-Hant-TW" data-theme="cream">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>造島工坊｜3D 島嶼網站生成器</title>
+<meta name="description" content="填表格、上傳資料，一鍵下載「造島包」，丟給你的 AI 就能蓋好 3D 島嶼網站並幫你上架。">
+<meta name="theme-color" content="#f6f0e4">
+<meta property="og:type" content="website">
+<meta property="og:title" content="造島工坊｜3D 島嶼網站生成器">
+<meta property="og:description" content="填表格、上傳資料，下載造島包，交給你的 AI 蓋好 3D 島嶼網站。">
+<meta property="og:image" content="https://isleforge-tw.netlify.app/og.png">
+<meta property="og:url" content="https://isleforge-tw.netlify.app/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#form">跳到表單</a>
+
+<header class="topbar">
+  <a class="brand" href="./" aria-label="造島工坊 首頁">
+    <img src="favicon.svg" alt="" width="36" height="36">
+    <span class="brand-text"><strong>造島工坊</strong><small>IsleForge · 3D 島嶼網站生成器</small></span>
+  </a>
+  <div class="top-actions">
+    <div class="theme-switch" role="group" aria-label="網站底色">
+      <button type="button" aria-pressed="false" data-theme-btn="cream" title="奶茶米"><i style="background:#f6f0e4"></i><span>奶茶米</span></button>
+      <button type="button" aria-pressed="false" data-theme-btn="sea" title="海霧藍"><i style="background:#dcebee"></i><span>海霧藍</span></button>
+      <button type="button" aria-pressed="false" data-theme-btn="night" title="夜海"><i style="background:#16222e"></i><span>夜海</span></button>
+    </div>
+    <a class="btn ghost" href="#tutorial" id="lnkTutorial" title="使用教學影片"><span aria-hidden="true">▶</span><span class="lbl">教學</span></a>
+    <button type="button" class="btn ghost icon-btn" id="btnHelp" aria-label="使用說明" title="使用說明"><span aria-hidden="true">?</span><span class="lbl">說明</span></button>
+    <details class="menu">
+      <summary class="btn ghost" aria-label="草稿選單">草稿<span aria-hidden="true"> ▾</span></summary>
+      <div class="menu-list">
+        <button type="button" id="btnExample">填入範例資料</button>
+        <button type="button" id="btnSaveDraft">下載草稿（帶到別台電腦）</button>
+        <button type="button" id="btnUpdateMenu">🔄 更新已做好的島（做第 2 版）</button>
+        <label class="as-btn" tabindex="0">匯入草稿或 project.json<input type="file" id="importDraft" accept=".json,application/json" hidden></label>
+        <hr>
+        <button type="button" id="btnReset" class="danger">全部清空，重新開始</button>
+      </div>
+    </details>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">給老師、講師、創作者的 3D 島嶼網站生成器</p>
+    <button type="button" class="news" id="btnRpgNews"><em class="new-tag">NEW</em> 新功能：火山、冰雪、沙漠等 9 種島形，更多動物、點綴與運鏡，底色跟著日出日落換，資料可用「島名資料夾」整包上傳 →</button>
+    <h1>填好表格，下載<span class="hl">造島包</span>，<br>交給你的 AI 蓋島上架</h1>
+    <ol class="flow" aria-label="四個步驟">
+      <li><b>1</b>填島嶼資料</li>
+      <li><b>2</b>放進手邊檔案</li>
+      <li><b>3</b>下載造島包</li>
+      <li><b>4</b>AI 幫你蓋好、上架</li>
+    </ol>
+    <div class="hero-cta">
+      <button type="button" class="btn primary big" id="btnStart">開始造島</button>
+      <button type="button" class="btn big" id="btnTryExample">先用範例試試看</button>
+      <button type="button" class="btn big upd-cta" id="btnUpdateHero">🔄 更新已做好的島</button>
+      <a class="btn big ghost" href="#tutorial" id="btnWatch">▶ 看教學影片（2 分鐘）</a>
+    </div>
+  </div>
+</section>
+
+<main class="layout">
+  <nav class="steps" aria-label="步驟">
+    <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+    <button type="button" data-step="0"><b>1</b><span>選島型</span></button>
+    <button type="button" data-step="1"><b>2</b><span>基本資料</span></button>
+    <button type="button" data-step="2"><b>3</b><span>島嶼清單</span></button>
+    <button type="button" data-step="3"><b>4</b><span>上傳資料</span></button>
+    <button type="button" data-step="4"><b>5</b><span>外觀與功能</span></button>
+    <button type="button" data-step="5"><b>6</b><span>下載造島包</span></button>
+  </nav>
+
+  <form class="panel" id="form" autocomplete="off" novalidate tabindex="-1">
+    <div class="upd-banner" id="updBanner" hidden></div>
+    <!-- 步驟 1 -->
+    <section class="step" data-panel="0">
+      <p class="step-no">步驟 1／6</p>
+      <h2>你想蓋哪一種島？</h2>
+      <p class="hint">選最接近的就好，之後隨時可以回來改。</p>
+      <div class="type-grid" id="typeGrid" role="group" aria-label="島型"></div>
+      <label class="rpg-card" id="rpgCard">
+        <input type="checkbox" id="rpgToggle">
+        <span class="rpg-body">
+          <b>🎮 加上 RPG 模式 <em class="new-tag">NEW</em></b>
+          <small>任何島型都能變成「小島＋RPG」：建立冒險者角色在島上走動、每座島一位 NPC 說故事、答題拿 EXP 升等級、集滿島章挑戰中央島、領取冒險證書。</small>
+        </span>
+      </label>
+      <label class="rpg-card" id="lifeCard">
+        <input type="checkbox" id="lifeToggle">
+        <span class="rpg-body">
+          <b>🌅 生活感模式 <em class="new-tag">NEW</em></b>
+          <small>讓島「活起來」：居民在島上散步，點了會揮手聊天、可以撿貝殼跟居民交易；天上有雲和鳥群，海上有帆船；白天有太陽，黃昏變橘紅，晚上路燈和窗戶亮起、滿天星星。右邊預覽就能直接試玩。</small>
+        </span>
+      </label>
+    </section>
+
+    <!-- 步驟 2 -->
+    <section class="step" data-panel="1" hidden>
+      <p class="step-no">步驟 2／6</p>
+      <h2>基本資料</h2>
+      <p class="hint">只有 <em>*</em> 是必填，其他可以留白，AI 會用合理的預設。</p>
+      <div class="field">
+        <label for="f-title">網站名稱 <em>*</em></label>
+        <input id="f-title" name="title" maxlength="40" placeholder="例：阿亮老師的 AI 教學群島" aria-describedby="e-title">
+        <p class="err" id="e-title" hidden>請填網站名稱</p>
+      </div>
+      <div class="field">
+        <label for="f-tagline">一句話介紹 <em>*</em></label>
+        <input id="f-tagline" name="tagline" maxlength="80" placeholder="例：跟著小島一站一站學會生成式 AI" aria-describedby="e-tagline">
+        <p class="err" id="e-tagline" hidden>請用一句話介紹這個網站</p>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="f-slug">英文代號（網址用）</label>
+          <input id="f-slug" name="slug" maxlength="40" placeholder="例：aliang-ai-islands" inputmode="url" aria-describedby="h-slug">
+          <small id="h-slug">小寫英文、數字、減號。會變成網址，例如 <b id="slugDemo">my-island</b>.netlify.app</small>
+        </div>
+        <div class="field">
+          <label for="f-audience">目標對象</label>
+          <select id="f-audience" name="audience">
+            <option value="">請選擇</option>
+            <option>國小學生</option><option>國中學生</option><option>高中職學生</option>
+            <option>大專學生</option><option>老師與教育工作者</option><option>企業員工</option>
+            <option>一般大眾</option><option>家長</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-author">作者／單位</label>
+          <input id="f-author" name="author" maxlength="60" placeholder="例：3A 科技研究社">
+        </div>
+        <div class="field">
+          <label for="f-contact">聯絡方式或社群連結</label>
+          <input id="f-contact" name="contact" maxlength="200" placeholder="例：https://www.facebook.com/…">
+        </div>
+        <div class="field">
+          <label for="f-mascotName">吉祥物／主角名稱</label>
+          <input id="f-mascotName" name="mascotName" maxlength="20" placeholder="例：小亮">
+        </div>
+        <div class="field">
+          <label for="f-language">介面語言</label>
+          <select id="f-language" name="language">
+            <option value="zh-TW">繁體中文（臺灣）</option>
+            <option value="zh-TW+en">繁中＋英文對照</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-mascotDesc">吉祥物外觀描述</label>
+        <input id="f-mascotDesc" name="mascotDesc" maxlength="80" placeholder="例：戴圓眼鏡、穿綠色背心的 Q 版老師">
+      </div>
+    </section>
+
+    <!-- 步驟 3 -->
+    <section class="step" data-panel="2" hidden>
+      <p class="step-no">步驟 3／6</p>
+      <h2>島嶼清單</h2>
+      <p class="hint" id="islandHint">一列是一座島，建議 3～12 座。先填名稱和一句介紹，按「更多」可以補內容重點與連結。</p>
+      <div class="table-tools">
+        <button type="button" class="btn" id="btnAddIsland">＋ 新增一座島</button>
+        <button type="button" class="btn ghost" id="btnPaste" aria-expanded="false" aria-controls="pasteBox">從 Excel 匯入</button>
+        <span class="count" id="islandCount" aria-live="polite"></span>
+      </div>
+      <div class="paste-box" id="pasteBox" hidden>
+        <p class="import-lead">請照 <b>①→②→③</b> 的順序做，用範本填寫才不會讀錯欄位。</p>
+        <ol class="import-steps" id="importSteps">
+          <li id="impStep1"><b class="no" aria-hidden="true">1</b><div><strong>先下載範本</strong><span>欄位已排好，請一定要用這個範本填寫，不要自己開新的 Excel。</span></div><button type="button" class="btn primary" id="btnTemplate">⬇ 下載 Excel 範本</button></li>
+          <li id="impStep2"><b class="no" aria-hidden="true">2</b><div><strong>用 Excel 打開範本填寫，存檔</strong>
+            <ul class="imp-rules">
+              <li><b>一列一座島</b>，最多 20 座；第 1 列的欄位名稱<b>不要改、不要刪</b>。</li>
+              <li>只有「<b>島名</b>」必填，其他可以留白。</li>
+              <li>「內容重點」有好幾點時，用全形分號「；」隔開。</li>
+              <li>標「（範例）」的兩列是示範，請<b>直接改寫或刪掉</b>（沒刪也不會被匯入）。</li>
+              <li>填好按「儲存」，保持 .xlsx 格式即可。</li>
+            </ul></div></li>
+          <li id="impStep3"><b class="no" aria-hidden="true">3</b><div><strong>上傳填好的檔案</strong><span id="impNeedTpl">還沒下載範本？請先做第 ① 步。</span><label class="check"><input type="checkbox" id="pasteReplace"> 取代目前清單（不勾＝加在後面）</label></div><label class="btn" id="lblSheet" tabindex="0">⬆ 上傳填好的 Excel<input type="file" id="sheetInput" accept=".xlsx,.xls,.csv,text/csv" hidden></label></li>
+        </ol>
+        <details class="paste-alt">
+          <summary>進階：不想下載檔案？從試算表複製貼上</summary>
+          <p class="hint or">在 Excel／Google 試算表選取範圍（含第 1 列欄位名稱）複製，貼在下面：</p>
+          <textarea id="pasteArea" rows="4" aria-label="貼上表格資料" placeholder="島名&#9;分類&#9;一句介紹&#9;內容重點&#9;連結&#10;提示詞島&#9;基礎&#9;學會把需求說清楚&#9;角色；任務；格式&#9;https://…"></textarea>
+          <div class="row-end">
+            <button type="button" class="btn" id="btnPasteApply">匯入貼上的資料</button>
+          </div>
+        </details>
+      </div>
+      <p class="err" id="e-islands" hidden>至少要有 2 座有名字的島</p>
+      <div class="island-table" id="islandTable"></div>
+      <div class="field center-island">
+        <label for="f-centerName">中央大島叫什麼？</label>
+        <input id="f-centerName" name="centerName" maxlength="30" placeholder="不填就用網站名稱">
+        <small id="centerHint"></small>
+      </div>
+    </section>
+
+    <!-- 步驟 4 -->
+    <section class="step" data-panel="3" hidden>
+      <p class="step-no">步驟 4／6</p>
+      <h2>放進手邊的資料</h2>
+      <p class="hint">講義、簡報、PDF、Word、圖片、題庫試算表都可以。<b>檔案只在你的瀏覽器裡打包，不會上傳到任何伺服器。</b></p>
+      <div class="folder-tip">
+        <div><b>📁 建議：一座島一個資料夾，整包一起放進來</b>
+          <ol>
+            <li>按「下載資料夾範本」：依步驟 3 的島名做好 <code>01_島名</code> 資料夾，另有 <code>00_共用</code>。</li>
+            <li>每座島的講義放進同名資料夾；全站都會用到的（課程大綱、題庫）放「00_共用」。</li>
+            <li>整個資料夾壓成 ZIP 拖到下面（也可以直接拖資料夾）。檔案會自動對應到同名的島，AI 不會混在一起。</li>
+          </ol></div>
+        <button type="button" class="btn" id="btnFolderTpl">⬇ 下載資料夾範本</button>
+      </div>
+      <div class="drop" id="drop" tabindex="0" role="button" aria-describedby="dropHint">
+        <svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true"><path d="M14 34h-2a8 8 0 0 1-1-15.9A12 12 0 0 1 34 16a9 9 0 0 1 2 18h-2" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M24 40V24m-6 6 6-6 6 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <strong>把檔案、資料夾或 ZIP 拖到這裡</strong>
+        <span id="dropHint">或按這裡選擇檔案（可一次選很多個；ZIP 會自動解開，總共 200 MB 以內）</span>
+        <input type="file" id="fileInput" multiple hidden>
+      </div>
+      <p class="size" id="fileSize" aria-live="polite"></p>
+      <ul class="file-list" id="fileList"></ul>
+      <label class="check big"><input type="checkbox" name="publishMaterials"> <span><b>允許把這些檔案放上網站給訪客下載</b><small>不勾的話，AI 只會讀內容改寫進網頁，不會公開原檔。</small></span></label>
+      <p class="note">小提醒：文字資料會自動保存，但檔案在重新整理後要重新放進來。</p>
+
+      <h3>請 AI 上網整理資料（選填）</h3>
+      <p class="hint">手邊沒有檔案？貼上公開網站的網址（例如學校官網、系所頁面、開放資料），AI 會讀這些頁面整理成島嶼內容，並附上來源與查詢日期。</p>
+      <div class="field">
+        <label for="f-webSources">公開資料網址（一行一個）</label>
+        <textarea id="f-webSources" name="webSources" rows="4" maxlength="3000" placeholder="https://www.example.edu.tw/&#10;https://www.example.edu.tw/departments" aria-describedby="h-web"></textarea>
+        <small id="h-web">AI 只會讀公開頁面、遵守網站規定並放慢速度，內容會改寫成摘要並附來源，不抓個資與圖片。需要登入的網站請不要貼。</small>
+      </div>
+    </section>
+
+    <!-- 步驟 5 -->
+    <section class="step" data-panel="4" hidden>
+      <p class="step-no">步驟 5／6</p>
+      <h2>配色、外觀與功能</h2>
+      <h3>三組底色（訪客可以自己切換）</h3>
+      <p class="hint">第 1 組是預設。用「⇄ 輪換」或每組下方的箭頭互換順序。</p>
+      <div class="theme-slots" id="themeSlots"></div>
+      <label class="check big theme-auto"><input type="checkbox" name="themeAuto"> <span><b>🌅 跟著島上的日出日落自動換底色</b><small id="themeAutoHint">白天用最亮的一組、黃昏用中間那組、夜晚用最暗的一組；訪客手動選了某一組，就照訪客的選擇。</small></span></label>
+      <div class="row-gap">
+        <button type="button" class="btn" id="btnRotate">⇄ 輪換三組底色</button>
+        <label class="color">主色 <input type="color" name="primary" aria-label="主色"></label>
+        <label class="color">強調色 <input type="color" name="accent" aria-label="強調色"></label>
+      </div>
+      <p class="hint sub">一鍵套用配色：</p>
+      <div class="presets" id="presets"></div>
+
+      <h3>視覺風格</h3>
+      <div class="chips" id="styleChips" role="group" aria-label="視覺風格"></div>
+
+      <h3>字體</h3>
+      <div class="chips" id="fontChips" role="group" aria-label="字體"></div>
+
+      <h3 id="lookTitle">島嶼外觀 <em class="new-tag">NEW</em></h3>
+      <p class="hint">選島的樣子、要漂亮到什麼程度、島上住哪些動物。右邊預覽會跟著變（預覽是示意，AI 會做得更精緻）。</p>
+      <h4 class="sub-h">島的形狀</h4>
+      <div class="shape-grid" id="shapeGrid" role="group" aria-label="島的形狀"></div>
+      <h4 class="sub-h">精緻度：要漂亮到什麼程度？</h4>
+      <div class="detail-scale" id="detailScale" role="group" aria-label="精緻度"></div>
+      <p class="hint detail-desc" id="detailDesc" aria-live="polite"></p>
+      <h4 class="sub-h">島上的動物（可複選）</h4>
+      <div class="chips" id="animalChips" role="group" aria-label="島上的動物"></div>
+      <h4 class="sub-h">地景點綴（可複選）</h4>
+      <div class="chips" id="extraChips" role="group" aria-label="地景點綴"></div>
+      <h4 class="sub-h">鏡頭運鏡（進場與點島的轉場動畫）</h4>
+      <div class="chips" id="cinemaChips" role="group" aria-label="鏡頭運鏡"></div>
+      <p class="hint" id="cinemaDesc" aria-live="polite"></p>
+      <p class="hint sub">浮空島、吊橋、熱氣球、小動物都是常見的通用元素；造島包會要求 AI 全部原創繪製，不複製別人的網站。</p>
+
+      <h3>想要的功能</h3>
+      <p class="hint">已經依島型勾好建議組合，可以再加減。</p>
+      <ul class="fixed-spec" aria-label="固定規格">
+        <li><b>✓ RWD 自適應版面</b>：桌機、平板、手機都好用（必備）</li>
+        <li><b>✕ 不做 PWA</b>：維持一般網頁，不做安裝到桌面與離線模式</li>
+      </ul>
+      <div class="feature-grid" id="featureGrid"></div>
+    </section>
+
+    <!-- 步驟 6 -->
+    <section class="step" data-panel="5" hidden>
+      <p class="step-no">步驟 6／6</p>
+      <h2>下載造島包</h2>
+      <div class="grid2">
+        <div class="field">
+          <label for="f-ai">你用哪個 AI 來蓋島？</label>
+          <select id="f-ai" name="ai">
+            <option value="claude">Claude Code</option>
+            <option value="codex">Codex</option>
+            <option value="gemini">Gemini CLI</option>
+            <option value="antigravity">Antigravity</option>
+            <option value="cursor">Cursor</option>
+            <option value="other">其他 AI 工具</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-deploy">想放到哪個網站？</label>
+          <select id="f-deploy" name="deploy">
+            <option value="ask">讓 AI 做完再問我</option>
+            <option value="netlify">Netlify</option>
+            <option value="github">GitHub Pages</option>
+            <option value="cloudflare">Cloudflare Pages</option>
+            <option value="vercel">Vercel</option>
+            <option value="local">先不上架，只在電腦看</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-notes">還有什麼要跟 AI 說的？</label>
+        <textarea id="f-notes" name="notes" rows="3" maxlength="1200" placeholder="例：島上要有一座圖書館；手機版按鈕要大一點；不要背景音樂。"></textarea>
+      </div>
+
+      <div class="upd-box" id="updBox" hidden>
+        <h3 id="updBoxTitle">這次要更新什麼？</h3>
+        <p class="hint">勾選類型，再用自己的話寫下要改的地方。你在表單裡改過的資料，造島工坊會自動比對列出來。</p>
+        <div class="chips" id="updKinds" role="group" aria-label="更新類型"></div>
+        <div class="field">
+          <label for="f-updNotes">更新說明 <em>*</em></label>
+          <textarea id="f-updNotes" rows="4" maxlength="2000" placeholder="例：新增「烘焙島」；第 3 座島的介紹改成新的課程內容；加上松鼠和小狗；手機版按鈕再大一點。"></textarea>
+        </div>
+        <div class="upd-diff" id="updDiff"></div>
+      </div>
+
+      <div class="check-card" id="checkCard" aria-live="polite"></div>
+
+      <div class="download">
+        <button type="button" class="btn primary big" id="btnDownload">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          下載造島包
+        </button>
+        <button type="button" class="btn big" id="btnCopyPrompt">複製給 AI 的指令</button>
+      </div>
+
+      <div class="success" id="success" hidden tabindex="-1">
+        <h3>🎉 造島包下載好了！接下來這樣做：</h3>
+        <ol id="howto"></ol>
+      </div>
+      <div class="after" id="after">
+        <h3>給 AI 的指令（整段貼上）</h3>
+        <pre class="prompt" id="promptBox"></pre>
+        <p class="note">AI 在電腦上測試好以後，會問你要放到哪個網站，回答它就好。</p>
+      </div>
+    </section>
+
+    <div class="step-nav">
+      <button type="button" class="btn ghost" id="btnPrev">← 上一步</button>
+      <span class="saved" id="saved" aria-live="polite"></span>
+      <button type="button" class="btn ghost peek" id="btnPeek">看預覽</button>
+      <button type="button" class="btn primary" id="btnNext">下一步 →</button>
+    </div>
+  </form>
+
+  <aside class="preview" id="preview" aria-label="島嶼預覽">
+    <div class="preview-head">
+      <strong>即時預覽 <small class="what" id="previewWhat"></small></strong>
+      <span>拖曳旋轉・滾輪縮放・點標籤飛到該島・點居民或動物聊天・🎬 播放運鏡</span>
+    </div>
+    <div class="stage" id="stage">
+      <canvas id="canvas" aria-hidden="true"></canvas>
+      <div class="labels" id="labels"></div>
+      <button type="button" class="stage-reset" id="btnView" title="回到全景" aria-label="回到全景">⟲</button>
+      <button type="button" class="stage-reset stage-cine" id="btnCine" title="播放開場運鏡" aria-label="播放開場運鏡">🎬</button>
+      <p class="no-webgl" id="noWebgl" hidden>這台裝置不支援 3D 預覽，不影響產生造島包。</p>
+    </div>
+    <div class="preview-theme" id="previewThemes" role="group" aria-label="預覽底色"></div>
+    <p class="preview-note">這是示意擺位。真正的島嶼由你的 AI 依造島包蓋出來，會更精緻。</p>
+  </aside>
+</main>
+
+<section class="tutorial" id="tutorial" aria-labelledby="tutTitle" tabindex="-1">
+  <p class="eyebrow">使用教學</p>
+  <h2 id="tutTitle">兩分鐘看懂怎麼造島</h2>
+  <p class="tut-lead">阿亮老師親自示範：從填表格、放資料，到下載造島包、交給 AI 蓋好網站。（島型會陸續增加，操作方式都一樣。）</p>
+  <div class="tut-body">
+  <div class="video-wrap">
+    <video id="tutVideo" controls preload="none" playsinline poster="tutorial-poster.jpg" width="1920" height="1080">
+      <source src="tutorial.mp4" type="video/mp4">
+      你的瀏覽器無法播放影片，請 <a href="tutorial.mp4">下載教學影片</a>。
+    </video>
+  </div>
+  <ol class="tut-steps">
+    <li><b>1</b><div><strong>選島型</strong><p>從島型卡片裡挑最接近你用途的一種，之後隨時可以回來換。</p></div></li>
+    <li><b>2</b><div><strong>填基本資料</strong><p>網站名稱和一句話介紹是必填，英文代號會變成網址。</p></div></li>
+    <li><b>3</b><div><strong>列出島嶼</strong><p>一列一座島，先填名稱與介紹；資料在 Excel 裡可以直接貼上。</p></div></li>
+    <li><b>4</b><div><strong>放進資料</strong><p>講義、簡報、圖片都可以，只在你的瀏覽器裡打包，不會上傳。</p></div></li>
+    <li><b>5</b><div><strong>配色與功能</strong><p>設定三組底色讓訪客切換，挑風格與想要的功能。</p></div></li>
+    <li><b>6</b><div><strong>下載交給 AI</strong><p>解壓後用你的 AI 開資料夾，貼上那段指令，AI 蓋好會問你要放哪個網站。</p></div></li>
+  </ol>
+  </div>
+  <h3>常見問題</h3>
+  <div class="faq">
+    <details><summary>我放進去的檔案會被上傳到網路嗎？</summary><p>不會。造島工坊沒有伺服器在收資料，所有打包都在你自己的瀏覽器裡完成，檔案只會出現在你下載的造島包裡。</p></details>
+    <details><summary>造島包裡面有什麼？</summary><p>給 AI 讀的施工說明（START_HERE.md、SKILL.md）、你填的資料（project.json、islands.csv）、島型與配色說明、驗收清單、部署說明，以及你放進去的檔案（materials 資料夾）。</p></details>
+    <details><summary>要用哪一種 AI？</summary><p>需要能讀取資料夾、執行指令的 AI 工具，例如 Claude Code、Codex、Gemini CLI、Antigravity、Cursor。只能聊天的網頁版 AI 通常沒辦法直接幫你建檔和上架。</p></details>
+    <details><summary>用 Excel 匯入島嶼，要什麼格式？</summary><p>請照三個步驟：① 在步驟 3 按「從 Excel 匯入 → 下載 Excel 範本」；② 用 Excel 打開範本填寫、存檔（一列一座島，最多 20 座；第 1 列欄位名稱不要改；只有「島名」必填；內容重點多點用「；」隔開；標「（範例）」的列改寫或刪掉）；③ 回到造島工坊按「上傳填好的 Excel」。範本裡也附了一張「填寫說明」工作表。</p></details>
+    <details><summary>可以請 AI 去學校官網或其他網站找資料嗎？</summary><p>可以。在步驟 4 的「請 AI 上網整理資料」貼上公開網址。造島包會要求 AI 只讀公開頁面、遵守網站的 robots.txt 與使用條款、放慢抓取速度，優先使用官方 API 或開放資料；內容改寫成摘要並附來源與日期，不複製整段文字、圖片，也不抓個人資料。</p></details>
+    <details><summary>換一台電腦要怎麼繼續填？</summary><p>按右上角「草稿 → 下載草稿」帶走 json 檔，到新電腦用「匯入草稿」選它即可。造島包裡的 project.json 也能匯回來修改。</p></details>
+    <details><summary>網站蓋好以後想改內容怎麼辦？</summary><p>直接請你的 AI 修改；或改 site/data/content.json 裡的文字。想大改的話，回到造島工坊匯入 project.json，改完重新下載造島包。</p></details>
+    <details><summary>已經上架了，下次要更新內容怎麼辦？</summary>
+      <p>AI 第一次幫你上架後，會在造島包資料夾留下 <b>「部署紀錄.md」</b>（網址、平台、更新指令）。<b>請保留整個資料夾</b>，換電腦就整包帶走。</p>
+      <ol>
+        <li>用 AI 打開<b>同一個資料夾</b>（不要重新下載造島包另開資料夾）。</li>
+        <li>貼上下面這段，把括號換成你要改的地方：<code class="update-prompt" id="updatePrompt">請先讀這個資料夾的「部署紀錄.md」和 SKILL.md。幫我把網站改成：（寫下要改什麼）。改好後在本機測試，再更新到原本同一個網址，不要建立新網站；最後打開正式網址確認，並更新部署紀錄的日期。</code><button type="button" class="btn small" id="btnCopyUpdate">複製更新指令</button></li>
+        <li>看不到新內容時，按 <b>Ctrl + F5</b> 強制重新整理（手機可關掉分頁重開）。</li>
+      </ol>
+      <p><b>想加島、加動物、換外觀（做第 2 版）？</b>按首頁的「🔄 更新已做好的島」，放入上一版（最好把 AI 做好的整個資料夾壓成 zip），在表單裡改好、寫下要更新什麼，就能下載「第 2 版更新包」和給 AI 的更新指令。</p>
+      <p>找不到部署紀錄？直接告訴 AI 你的正式網址和平台（例如 Netlify），它就能接著更新。用 Netlify 拖曳上架的人，更新時請到 Netlify 後台該專案的 Deploys 頁面拖曳 site 資料夾，不要回到 Drop 頁面，那樣會開出一個新網址。</p>
+    </details>
+    <details><summary>上架需要什麼帳號？</summary><p>Netlify、GitHub Pages、Cloudflare Pages、Vercel 都有免費方案，選一個註冊就好。登入時請自己在終端機操作，不要把密碼告訴 AI。</p></details>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="foot-grid">
+  <section class="author" aria-labelledby="authorTitle">
+    <h2 id="authorTitle">👨‍🏫 關於作者</h2>
+    <p class="author-name">曾慶良 主任（阿亮老師）</p>
+    <img class="author-card" src="author.jpg" width="1400" height="782" loading="lazy" alt="作者資訊：曾慶良主任，新興科技推廣中心主任、教育部學科中心研究教師、臺北市資訊教育輔導員，附 YouTube 頻道與講座邀約 QR code">
+    <div class="author-grid">
+      <div>
+        <h3>📌 現任職務</h3>
+        <ul>
+          <li>新興科技推廣中心主任</li>
+          <li>教育部學科中心研究教師</li>
+          <li>臺北市資訊教育輔導員</li>
+        </ul>
+      </div>
+      <div>
+        <h3>🏆 獲獎紀錄</h3>
+        <ul>
+          <li>2026年 國科會資安創意發想競賽優勝，蒙總統府接見</li>
+          <li>2025年 SETEAM教學專業講師認證</li>
+          <li>2024年 教育部人工智慧講師認證</li>
+          <li>2022、2023年 指導學生XR專題競賽特優</li>
+          <li>2022年 VR教材開發教師組特優</li>
+          <li>2019年 百大資訊人才獎</li>
+          <li>2018、2019年 親子天下創新100教師</li>
+          <li>2018年 臺北市特殊優良教師</li>
+          <li>2017年 教育部行動學習優等</li>
+        </ul>
+      </div>
+    </div>
+    <h3>📞 聯絡方式</h3>
+    <div class="contact">
+      <a class="btn" href="https://www.youtube.com/@Liang-yt02" target="_blank" rel="noopener">▶ YouTube：@Liang-yt02</a>
+      <a class="btn" href="https://www.facebook.com/groups/2754139931432955" target="_blank" rel="noopener">👥 Facebook：3A科技研究社</a>
+      <a class="btn" href="mailto:3a01chatgpt@gmail.com">✉ Email：3a01chatgpt@gmail.com</a>
+    </div>
+  </section>
+
+  <section class="license" aria-labelledby="licenseTitle">
+    <h2 id="licenseTitle">📜 授權聲明</h2>
+    <p><b>© 2026 阿亮老師 版權所有</b></p>
+    <p>本專案僅供「阿亮老師課程學員」學習使用。</p>
+    <h3>⚠️ 禁止事項</h3>
+    <ul class="ban">
+      <li>❌ 禁止修改本專案內容</li>
+      <li>❌ 禁止轉傳或散布</li>
+      <li>❌ 禁止商業使用</li>
+      <li>❌ 禁止未經授權之任何形式使用</li>
+    </ul>
+    <p>如有任何授權需求，請聯繫作者。</p>
+  </section>
+  </div>
+
+  <div class="signature">
+    <p class="privacy">造島工坊 IsleForge｜你填的資料與檔案只在你的瀏覽器處理，不會上傳</p>
+    <p><b>Made with ❤️ by 阿亮老師</b></p>
+    <a href="#" class="to-top">⬆️ 回到頂部</a>
+    <p>© 2026 阿亮老師 版權所有</p>
+  </div>
+</footer>
+
+<dialog id="helpDialog" aria-labelledby="helpTitle">
+  <form method="dialog">
+    <h2 id="helpTitle">歡迎來到造島工坊 🏝️</h2>
+    <p>三分鐘填好資料，就能得到一包給 AI 的「造島包」。</p>
+    <ol class="help-list">
+      <li><b>選島型</b>：課程、品牌、導覽、活動、闖關……挑最接近的；想做成遊戲，再打開下方的「RPG 模式」。</li>
+      <li><b>填資料、列島嶼</b>：可以直接從 Excel 貼上。</li>
+      <li><b>放進檔案</b>：講義、簡報、圖片，只在你的電腦打包。</li>
+      <li><b>挑配色</b>：三組底色，訪客可以自己切換。</li>
+      <li><b>下載造島包</b>：交給 AI，它會蓋好再問你要放哪個網站。</li>
+    </ol>
+    <p class="note">填寫內容會自動存在這台電腦的瀏覽器，下次打開還在。第一次用？首頁下方有兩分鐘的教學影片。</p>
+    <div class="dlg-actions">
+      <button class="btn ghost" value="video">看教學影片</button>
+      <button class="btn" value="example" id="helpExample">用範例試試</button>
+      <button class="btn primary" value="close">開始造島</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="updateDialog" aria-labelledby="updTitle">
+  <div class="upd-dlg">
+    <h2 id="updTitle">🔄 更新已做好的島</h2>
+    <p>把<b>上一版</b>放進來，在表單裡加島、改內容、加動物、換外觀，再寫下這次要更新什麼。造島工坊會把新需求<b>疊合</b>到上一版，做成<b>第 2 版更新包</b>，附上給 AI 的更新指令。</p>
+    <ol class="help-list">
+      <li><b>最推薦</b>：AI 做好網站後，把<b>整個資料夾</b>（裡面有 site/ 和 部署紀錄.md）按右鍵壓縮成 zip 放進來，更新包就會包含原本的網站，AI 可以直接接著改。</li>
+      <li>也可以：當初下載的<b>造島包 zip</b>，或裡面的 <b>project.json</b>。這時更新包要解壓到原本的資料夾（覆蓋），AI 才找得到網站。</li>
+    </ol>
+    <label class="drop upd-drop" id="updDrop">
+      <input type="file" id="updFile" accept=".zip,.json,application/zip,application/json">
+      <span>📦 選擇上一版的 zip 或 project.json<small>也可以直接拖曳到這裡</small></span>
+    </label>
+    <div class="check-card" id="updInfo" hidden aria-live="polite"></div>
+    <p class="note">檔案只在你的瀏覽器裡讀取與打包，不會上傳到任何伺服器。目前表單的內容會被上一版取代，需要的話先用「草稿 → 下載草稿」備份。</p>
+    <div class="dlg-actions">
+      <button type="button" class="btn" id="updCancel">取消</button>
+      <button type="button" class="btn primary" id="updGo" disabled>開始更新 →</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="confirmDialog" aria-labelledby="confirmTitle">
+  <form method="dialog">
+    <h2 id="confirmTitle">確定嗎？</h2>
+    <p id="confirmText"></p>
+    <div class="dlg-actions">
+      <button class="btn" value="cancel">取消</button>
+      <button class="btn danger-btn" value="ok" id="confirmOk">確定</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastText"></span><button type="button" id="toastAction" hidden></button></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/kit.js"></script>
+<script src="js/preview.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
